@@ -17,6 +17,7 @@ export function Tree() {
   const [isLongPressing, setIsLongPressing] = useState(false);
   const longPressTimerRef = useRef<ReturnType<typeof setTimeout> | null>(null);
   const hasMovedRef = useRef(false);
+  const dragStartPositionRef = useRef({ x: 0, y: 0 });
 
   useEffect(() => {
     if (!state.tree.lightsOn) {
@@ -59,17 +60,25 @@ export function Tree() {
   };
 
   const handlePointerMove = (e: React.PointerEvent) => {
+    // 드래그 중이면 무시
+    if (isLongPressing) return;
+    
     // 드래그가 활성화되기 전에 마우스가 많이 움직이면 취소
-    if (!isLongPressing && hasMovedRef.current) {
+    if (hasMovedRef.current) {
       if (longPressTimerRef.current) {
         clearTimeout(longPressTimerRef.current);
         longPressTimerRef.current = null;
       }
-    } else if (!isLongPressing) {
-      // 작은 움직임은 무시 (5px 이하)
-      const movement = Math.abs(e.movementX) + Math.abs(e.movementY);
-      if (movement > 5) {
-        hasMovedRef.current = true;
+      return;
+    }
+    
+    // 작은 움직임은 무시 (10px 이하)
+    const movement = Math.abs(e.movementX) + Math.abs(e.movementY);
+    if (movement > 10) {
+      hasMovedRef.current = true;
+      if (longPressTimerRef.current) {
+        clearTimeout(longPressTimerRef.current);
+        longPressTimerRef.current = null;
       }
     }
   };
@@ -82,19 +91,29 @@ export function Tree() {
         height: '600px',
         cursor: isLongPressing ? 'grabbing' : 'pointer',
         zIndex: isLongPressing ? 20 : 10,
-        x: state.positions.tree.x,
-        y: state.positions.tree.y,
       }}
       drag={isLongPressing}
       dragMomentum={false}
       dragConstraints={{ left: -1000, right: 1000, top: -500, bottom: 500 }}
+      dragElastic={0}
       onDragStart={() => {
+        // 드래그 시작 시 타이머 정리 및 시작 위치 저장
+        if (longPressTimerRef.current) {
+          clearTimeout(longPressTimerRef.current);
+          longPressTimerRef.current = null;
+        }
+        dragStartPositionRef.current = {
+          x: state.positions.tree.x,
+          y: state.positions.tree.y,
+        };
+        setIsLongPressing(true);
         hasMovedRef.current = true;
       }}
       onDragEnd={(_, info) => {
-        if (isLongPressing && (Math.abs(info.offset.x) > 5 || Math.abs(info.offset.y) > 5)) {
-          const newX = state.positions.tree.x + info.offset.x;
-          const newY = state.positions.tree.y + info.offset.y;
+        if (isLongPressing && (Math.abs(info.offset.x) > 1 || Math.abs(info.offset.y) > 1)) {
+          // 드래그 시작 위치에 offset을 더해 최종 위치 계산
+          const newX = dragStartPositionRef.current.x + info.offset.x;
+          const newY = dragStartPositionRef.current.y + info.offset.y;
           setPosition('tree', newX, newY);
         }
         setIsLongPressing(false);
@@ -129,8 +148,8 @@ export function Tree() {
       whileHover={{ scale: 1.05 }}
       whileDrag={isLongPressing ? { cursor: 'grabbing', zIndex: 20, scale: 1.02 } : {}}
       whileTap={isLongPressing ? {} : { scale: 0.95 }}
-      initial={{ opacity: 0, y: 20 }}
-      animate={{ opacity: 1, y: 0 }}
+      initial={{ opacity: 0, y: 20, x: state.positions.tree.x }}
+      animate={{ opacity: 1, y: 0, x: state.positions.tree.x }}
       transition={{ duration: 0.5 }}
     >
       {/* 트리 PNG 이미지 */}

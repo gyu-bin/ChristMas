@@ -8,6 +8,15 @@ export function ChristmasCountdown() {
     minutes: 0,
     seconds: 0,
   });
+  const [isMobile, setIsMobile] = useState(window.innerWidth <= 768);
+
+  useEffect(() => {
+    const handleResize = () => {
+      setIsMobile(window.innerWidth <= 768);
+    };
+    window.addEventListener('resize', handleResize);
+    return () => window.removeEventListener('resize', handleResize);
+  }, []);
 
   useEffect(() => {
     const calculateTimeLeft = () => {
@@ -44,53 +53,53 @@ export function ChristmasCountdown() {
     <motion.div
       style={{
         position: 'fixed',
-        top: '120px',
-        left: '20px',
+        top: isMobile ? '70px' : '120px',
+        left: isMobile ? '10px' : '20px',
         zIndex: 50,
         background: 'rgba(26, 26, 46, 0.8)',
         backdropFilter: 'blur(10px)',
-        padding: '15px 20px',
+        padding: isMobile ? '10px 12px' : '15px 20px',
         borderRadius: '12px',
         border: '1px solid rgba(255, 255, 255, 0.1)',
         color: '#ffffff',
         fontFamily: 'monospace',
-        fontSize: '14px',
+        fontSize: isMobile ? '11px' : '14px',
         boxShadow: '0 4px 20px rgba(0, 0, 0, 0.3)',
       }}
       initial={{ opacity: 0, x: -20 }}
       animate={{ opacity: 1, x: 0 }}
       transition={{ duration: 0.5, delay: 0.2 }}
     >
-      <div style={{ marginBottom: '10px', fontSize: '16px', fontWeight: 'bold', color: '#ff6b6b' }}>
+      <div style={{ marginBottom: isMobile ? '6px' : '10px', fontSize: isMobile ? '12px' : '16px', fontWeight: 'bold', color: '#ff6b6b' }}>
         🎄 크리스마스까지
       </div>
-      <div style={{ display: 'flex', gap: '12px', alignItems: 'center' }}>
+      <div style={{ display: 'flex', gap: isMobile ? '6px' : '12px', alignItems: 'center' }}>
         <div style={{ textAlign: 'center' }}>
-          <div style={{ fontSize: '24px', fontWeight: 'bold', color: '#ffe66d' }}>
+          <div style={{ fontSize: isMobile ? '18px' : '24px', fontWeight: 'bold', color: '#ffe66d' }}>
             {timeLeft.days}
           </div>
-          <div style={{ fontSize: '10px', opacity: 0.7 }}>일</div>
+          <div style={{ fontSize: isMobile ? '8px' : '10px', opacity: 0.7 }}>일</div>
         </div>
-        <div style={{ fontSize: '20px', opacity: 0.5 }}>:</div>
+        <div style={{ fontSize: isMobile ? '14px' : '20px', opacity: 0.5 }}>:</div>
         <div style={{ textAlign: 'center' }}>
-          <div style={{ fontSize: '24px', fontWeight: 'bold', color: '#ffe66d' }}>
+          <div style={{ fontSize: isMobile ? '18px' : '24px', fontWeight: 'bold', color: '#ffe66d' }}>
             {timeLeft.hours}
           </div>
-          <div style={{ fontSize: '10px', opacity: 0.7 }}>시간</div>
+          <div style={{ fontSize: isMobile ? '8px' : '10px', opacity: 0.7 }}>시간</div>
         </div>
-        <div style={{ fontSize: '20px', opacity: 0.5 }}>:</div>
+        <div style={{ fontSize: isMobile ? '14px' : '20px', opacity: 0.5 }}>:</div>
         <div style={{ textAlign: 'center' }}>
-          <div style={{ fontSize: '24px', fontWeight: 'bold', color: '#ffe66d' }}>
+          <div style={{ fontSize: isMobile ? '18px' : '24px', fontWeight: 'bold', color: '#ffe66d' }}>
             {timeLeft.minutes}
           </div>
-          <div style={{ fontSize: '10px', opacity: 0.7 }}>분</div>
+          <div style={{ fontSize: isMobile ? '8px' : '10px', opacity: 0.7 }}>분</div>
         </div>
-        <div style={{ fontSize: '20px', opacity: 0.5 }}>:</div>
+        <div style={{ fontSize: isMobile ? '14px' : '20px', opacity: 0.5 }}>:</div>
         <div style={{ textAlign: 'center' }}>
-          <div style={{ fontSize: '24px', fontWeight: 'bold', color: '#ffe66d' }}>
+          <div style={{ fontSize: isMobile ? '18px' : '24px', fontWeight: 'bold', color: '#ffe66d' }}>
             {timeLeft.seconds}
           </div>
-          <div style={{ fontSize: '10px', opacity: 0.7 }}>초</div>
+          <div style={{ fontSize: isMobile ? '8px' : '10px', opacity: 0.7 }}>초</div>
         </div>
       </div>
     </motion.div>

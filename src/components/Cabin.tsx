@@ -181,6 +181,23 @@ export function Cabin() {
         {/* 문 앞 눈 쌓임 */}
         <ellipse cx="50" cy="85" rx="20" ry="3" fill="#ffffff" opacity="0.8" />
       </svg>
+
+      {/* 클릭 힌트 */}
+      <motion.div
+        style={{
+          position: 'absolute',
+          bottom: '30px',
+          left: '50%',
+          transform: 'translateX(-50%)',
+          color: '#ffffff80',
+          fontSize: '12px',
+          whiteSpace: 'nowrap',
+        }}
+        animate={{ opacity: [0.5, 1, 0.5] }}
+        transition={{ duration: 2, repeat: Infinity }}
+      >
+        ⛄ 클릭하여 변경
+      </motion.div>
     </motion.div>
   );
 }

@@ -25,9 +25,18 @@ export function TerminalPanel() {
   const { state, setSnowConfig, toggleTreeLights, setTreeConfig, addTerminalCommand, clearTerminal, setEasterEgg, toggleTerminal, showSanta, showSantaArmy, startGame } = useApp();
   const [input, setInput] = useState('');
   const [currentOutput, setCurrentOutput] = useState<{ text: string; isTyping: boolean } | null>(null);
+  const [isMobile, setIsMobile] = useState(window.innerWidth <= 768);
   const inputRef = useRef<HTMLInputElement>(null);
   const terminalRef = useRef<HTMLDivElement>(null);
-  // 이스터에그는 이제 터미널 명령어로 쉽게 실행됩니다
+  
+  // 모바일 감지
+  useEffect(() => {
+    const handleResize = () => {
+      setIsMobile(window.innerWidth <= 768);
+    };
+    window.addEventListener('resize', handleResize);
+    return () => window.removeEventListener('resize', handleResize);
+  }, []);
 
   useEffect(() => {
     if (terminalRef.current) {
@@ -54,6 +63,7 @@ export function TerminalPanel() {
   game          - 눈사람 맞추기 미니 게임 시작 🎮
   build         - 프로젝트 빌드 시뮬레이션
   git status    - Git 상태 확인
+  feedback      - 피드백 보내기 💌
   clear         - 터미널 화면 지우기`;
 
   output += `\n\n💡 이스터에그: 'merry', 'christmas', 'xmas' 명령어를 입력해보세요!`;
@@ -148,6 +158,10 @@ no changes added to commit (use "git add" to stage)`;
         }
         break;
 
+      case 'feedback':
+        output = `💌 피드백 및 문의사항이 있으시면 아래 메일로 연락해주세요!\n\n   📧 rbqls6651@naver.com\n\n   감사합니다! 😊`;
+        break;
+
       case 'merry':
       case 'christmas':
       case 'xmas':
@@ -186,12 +200,12 @@ no changes added to commit (use "git add" to stage)`;
   // 터미널이 숨겨진 경우 토글 버튼만 표시
   if (!state.terminal.visible) {
     return (
-      <motion.button
+        <motion.button
         onClick={toggleTerminal}
         style={{
           position: 'fixed',
-          top: '20px',
-          right: '20px',
+          top: isMobile ? '10px' : '20px',
+          right: isMobile ? '10px' : '20px',
           width: '48px',
           height: '48px',
           backgroundColor: 'rgba(13, 17, 23, 0.95)',
@@ -206,6 +220,8 @@ no changes added to commit (use "git add" to stage)`;
           zIndex: 100,
           boxShadow: '0 4px 16px rgba(0, 0, 0, 0.4)',
           backdropFilter: 'blur(10px)',
+          WebkitTapHighlightColor: 'transparent',
+          touchAction: 'manipulation',
         }}
         whileHover={{ scale: 1.1 }}
         whileTap={{ scale: 0.9 }}
@@ -220,25 +236,26 @@ no changes added to commit (use "git add" to stage)`;
 
   return (
     <motion.div
-      style={{
-        position: 'fixed',
-        top: '20px',
-        right: '20px',
-        width: 'clamp(320px, 500px, 90vw)',
-        maxHeight: '600px',
-        backgroundColor: 'rgba(13, 17, 23, 0.95)',
-        border: '1px solid rgba(255, 255, 255, 0.1)',
-        borderRadius: '8px',
-        padding: '16px',
-        fontFamily: 'Monaco, "Courier New", monospace',
-        fontSize: '14px',
-        color: '#c9d1d9',
-        boxShadow: '0 8px 32px rgba(0, 0, 0, 0.4)',
-        backdropFilter: 'blur(10px)',
-        zIndex: 100,
-        display: 'flex',
-        flexDirection: 'column',
-      }}
+        style={{
+          position: 'fixed',
+          top: isMobile ? '10px' : '20px',
+          right: isMobile ? '10px' : '20px',
+          left: isMobile ? '10px' : 'auto',
+          width: isMobile ? 'calc(100vw - 20px)' : 'clamp(320px, 500px, 90vw)',
+          maxHeight: isMobile ? 'calc(100vh - 20px)' : '600px',
+          backgroundColor: 'rgba(13, 17, 23, 0.95)',
+          border: '1px solid rgba(255, 255, 255, 0.1)',
+          borderRadius: '8px',
+          padding: isMobile ? '12px' : '16px',
+          fontFamily: 'Monaco, "Courier New", monospace',
+          fontSize: isMobile ? '12px' : '14px',
+          color: '#c9d1d9',
+          boxShadow: '0 8px 32px rgba(0, 0, 0, 0.4)',
+          backdropFilter: 'blur(10px)',
+          zIndex: 100,
+          display: 'flex',
+          flexDirection: 'column',
+        }}
       initial={{ opacity: 0, x: 100 }}
       animate={{ opacity: 1, x: 0 }}
       exit={{ opacity: 0, x: 100 }}
@@ -348,10 +365,15 @@ no changes added to commit (use "git add" to stage)`;
               outline: 'none',
               color: '#c9d1d9',
               fontFamily: 'Monaco, "Courier New", monospace',
-              fontSize: '14px',
+              fontSize: isMobile ? '12px' : '14px',
+              WebkitAppearance: 'none',
+              WebkitTapHighlightColor: 'transparent',
             }}
-            autoFocus
+            autoFocus={!isMobile}
             placeholder="명령어 입력..."
+            inputMode="text"
+            autoCapitalize="off"
+            autoCorrect="off"
           />
         </div>
       </form>

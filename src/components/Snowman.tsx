@@ -10,6 +10,8 @@ export function Snowman() {
   const [isLongPressing, setIsLongPressing] = useState(false);
   const longPressTimerRef = useRef<ReturnType<typeof setTimeout> | null>(null);
   const hasMovedRef = useRef(false);
+  const dragStartPositionRef = useRef({ x: 0, y: 0 });
+  const snowmanRef = useRef<HTMLDivElement>(null);
 
   // state.snowman 값에 따라 다양한 색조 필터 적용
   const colorFilters = [
@@ -24,6 +26,7 @@ export function Snowman() {
   // hat과 scarf 값을 조합하여 필터 선택
   const filterIndex = (state.snowman.hat + state.snowman.scarf) % colorFilters.length;
   const currentFilter = colorFilters[filterIndex];
+
 
   const handleClick = () => {
     updateSnowman();
@@ -82,42 +85,61 @@ export function Snowman() {
   };
 
   const handlePointerMove = (e: React.PointerEvent) => {
+    // 드래그 중이면 무시
+    if (isLongPressing) return;
+    
     // 드래그가 활성화되기 전에 마우스가 많이 움직이면 취소
-    if (!isLongPressing && hasMovedRef.current) {
+    if (hasMovedRef.current) {
       if (longPressTimerRef.current) {
         clearTimeout(longPressTimerRef.current);
         longPressTimerRef.current = null;
       }
-    } else if (!isLongPressing) {
-      // 작은 움직임은 무시 (5px 이하)
-      const movement = Math.abs(e.movementX) + Math.abs(e.movementY);
-      if (movement > 5) {
-        hasMovedRef.current = true;
+      return;
+    }
+    
+    // 작은 움직임은 무시 (10px 이하)
+    const movement = Math.abs(e.movementX) + Math.abs(e.movementY);
+    if (movement > 10) {
+      hasMovedRef.current = true;
+      if (longPressTimerRef.current) {
+        clearTimeout(longPressTimerRef.current);
+        longPressTimerRef.current = null;
       }
     }
   };
 
   return (
     <motion.div
+      ref={snowmanRef}
       style={{
         position: 'relative',
         width: '450px',
         height: '500px',
         cursor: isLongPressing ? 'grabbing' : 'pointer',
         zIndex: isLongPressing ? 20 : 10,
-        x: state.positions.snowman.x,
-        y: state.positions.snowman.y,
       }}
       drag={isLongPressing}
       dragMomentum={false}
       dragConstraints={{ left: -1000, right: 1000, top: -500, bottom: 500 }}
+      dragElastic={0}
       onDragStart={() => {
+        // 드래그 시작 시 타이머 정리 및 시작 위치 저장
+        if (longPressTimerRef.current) {
+          clearTimeout(longPressTimerRef.current);
+          longPressTimerRef.current = null;
+        }
+        dragStartPositionRef.current = {
+          x: state.positions.snowman.x,
+          y: state.positions.snowman.y,
+        };
+        setIsLongPressing(true);
         hasMovedRef.current = true;
       }}
       onDragEnd={(_, info) => {
-        if (isLongPressing && (Math.abs(info.offset.x) > 5 || Math.abs(info.offset.y) > 5)) {
-          const newX = state.positions.snowman.x + info.offset.x;
-          const newY = state.positions.snowman.y + info.offset.y;
+        if (isLongPressing && (Math.abs(info.offset.x) > 1 || Math.abs(info.offset.y) > 1)) {
+          // 드래그 시작 위치에 offset을 더해 최종 위치 계산
+          const newX = dragStartPositionRef.current.x + info.offset.x;
+          const newY = dragStartPositionRef.current.y + info.offset.y;
           setPosition('snowman', newX, newY);
         }
         setIsLongPressing(false);
@@ -137,8 +159,8 @@ export function Snowman() {
       whileHover={{ scale: 1.05 }}
       whileDrag={isLongPressing ? { cursor: 'grabbing', zIndex: 20, scale: 1.02 } : {}}
       whileTap={isLongPressing ? {} : { scale: 0.95 }}
-      initial={{ opacity: 0, y: 20 }}
-      animate={{ opacity: 1, y: 0 }}
+      initial={{ opacity: 0, y: 20, x: state.positions.snowman.x }}
+      animate={{ opacity: 1, y: 0, x: state.positions.snowman.x }}
       transition={{ duration: 0.5, delay: 0.2 }}
     >
       {/* 눈사람 이미지 - 클릭 시 크기 애니메이션 */}
@@ -175,6 +197,7 @@ export function Snowman() {
           }}
         />
       </motion.div>
+
 
       {/* 반짝임 효과 */}
       <AnimatePresence>

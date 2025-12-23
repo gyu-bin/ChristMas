@@ -12,6 +12,11 @@ body {
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
   overflow: hidden;
+  /* 모바일 최적화 */
+  -webkit-tap-highlight-color: transparent;
+  touch-action: manipulation;
+  /* iOS Safari 전용 */
+  -webkit-overflow-scrolling: touch;
 }
 
 .app {
@@ -43,22 +48,42 @@ body {
 
 /* 반응형 디자인 */
 @media (max-width: 768px) {
+  .app {
+    overflow-y: auto;
+    overflow-x: hidden;
+  }
+
   .app h1 {
-    font-size: 2rem !important;
+    font-size: 1.8rem !important;
   }
 
   .app p {
-    font-size: 1rem !important;
+    font-size: 0.9rem !important;
   }
 }
 
 @media (max-width: 480px) {
   .app h1 {
-    font-size: 1.5rem !important;
+    font-size: 1.3rem !important;
   }
 
   .app p {
-    font-size: 0.9rem !important;
+    font-size: 0.8rem !important;
+  }
+}
+
+/* 모바일 터치 최적화 */
+@media (hover: none) and (pointer: coarse) {
+  /* 터치 디바이스 전용 스타일 */
+  * {
+    -webkit-tap-highlight-color: transparent;
+  }
+  
+  button,
+  [role="button"],
+  a {
+    min-height: 44px;
+    min-width: 44px;
   }
 }
 

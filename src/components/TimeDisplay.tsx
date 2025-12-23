@@ -28,31 +28,33 @@ export function TimeDisplay() {
     return `${year}-${month}-${day} (${weekday})`;
   };
 
+  const isMobile = window.innerWidth <= 768;
+  
   return (
     <motion.div
       style={{
         position: 'fixed',
-        top: '20px',
-        left: '20px',
+        top: isMobile ? '10px' : '20px',
+        left: isMobile ? '10px' : '20px',
         zIndex: 50,
         background: 'rgba(26, 26, 46, 0.8)',
         backdropFilter: 'blur(10px)',
-        padding: '15px 20px',
+        padding: isMobile ? '10px 12px' : '15px 20px',
         borderRadius: '12px',
         border: '1px solid rgba(255, 255, 255, 0.1)',
         color: '#ffffff',
         fontFamily: 'monospace',
-        fontSize: '14px',
+        fontSize: isMobile ? '11px' : '14px',
         boxShadow: '0 4px 20px rgba(0, 0, 0, 0.3)',
       }}
       initial={{ opacity: 0, x: -20 }}
       animate={{ opacity: 1, x: 0 }}
       transition={{ duration: 0.5 }}
     >
-      <div style={{ marginBottom: '8px', opacity: 0.8, fontSize: '12px' }}>
+      <div style={{ marginBottom: isMobile ? '4px' : '8px', opacity: 0.8, fontSize: isMobile ? '9px' : '12px' }}>
         {formatDate(currentTime)}
       </div>
-      <div style={{ fontSize: '24px', fontWeight: 'bold', fontFamily: 'monospace' }}>
+      <div style={{ fontSize: isMobile ? '18px' : '24px', fontWeight: 'bold', fontFamily: 'monospace' }}>
         {formatTime(currentTime)}
       </div>
     </motion.div>
