@@ -187,7 +187,7 @@ export function Snowman() {
         }}
       >
         <img
-          src="/assets/image/snowman/snowman-illustration-png.png"
+          src={`${import.meta.env.BASE_URL}assets/image/snowman/snowman-illustration-png.png`}
           alt="Snowman"
           style={{
             width: '120%',

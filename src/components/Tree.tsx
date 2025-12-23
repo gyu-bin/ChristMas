@@ -154,7 +154,7 @@ export function Tree() {
     >
       {/* 트리 PNG 이미지 */}
       <img
-        src="/assets/image/tree/christmas-tree-illustration-png.png"
+        src={`${import.meta.env.BASE_URL}assets/image/tree/christmas-tree-illustration-png.png`}
         alt="Christmas Tree"
         style={{
           width: '100%',
