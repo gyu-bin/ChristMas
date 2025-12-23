@@ -1,5 +1,5 @@
-import React, { createContext, useContext, useReducer, ReactNode } from 'react';
-import { AppState, SnowConfig, TreeState, SnowmanState, CabinState, TerminalCommand } from '../types';
+import { createContext, useContext, useReducer, ReactNode } from 'react';
+import { AppState, SnowConfig, TreeState } from '../types';
 
 interface AppContextType {
   state: AppState;
